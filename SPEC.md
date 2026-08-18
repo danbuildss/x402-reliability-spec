@@ -81,6 +81,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 
 **Fail condition:** Any other status code, including 200 (service should not respond freely), 401, 403, 500.
 
+**Failure severity:** Stages 1–4 failures are **soft failures** — no payment has been made. The service is misbehaving, but no funds are at risk.
+
 **Payment required:** No
 
 **Evidence fields:**
@@ -163,11 +165,13 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 
 **What it checks:** The endpoint successfully processes a real on-chain payment.
 
-**Method:** Submit a valid payment (using a synthetic check wallet) per the payment terms returned in stage 3. This includes constructing and signing the payment header, then making the authenticated request.
+**Method:** Submit a valid payment (using a synthetic check wallet) per the payment terms returned in stage 3. This includes constructing and signing the payment header per the scheme and network specified in stage 3, then making the authenticated request. The payment mechanism (scheme, network, asset) is determined entirely by the payment terms — this stage does not assume a specific chain or token.
 
 **Pass condition:** The endpoint accepts the payment and returns a non-402 response. Response status 200–299 is a clear pass. Some endpoints may return other 2xx or even 3xx codes — implementations may treat these as passing if documented.
 
 **Fail condition:** Endpoint returns 402 again (payment rejected), 4xx (payment invalid), 5xx (server error after payment), or no response.
+
+**Failure severity:** Stage 5 failures are **hard failures** — a payment may have been submitted and the funds are not recoverable by the checker. This is categorically different from stages 1–4 failures, where no payment is made. Implementations must surface this distinction in evidence records and monitoring alerts.
 
 **Payment required:** Yes — a real payment is made using the synthetic check wallet.
 
@@ -195,6 +199,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 **Pass condition:** Response body is non-empty. Where `mimeType` is specified in payment terms, the response `Content-Type` header must match (or be a valid subtype).
 
 **Fail condition:** Response body is empty, or `Content-Type` does not match the declared `mimeType`.
+
+**Failure severity:** Stage 6 failures are **hard failures** — payment was accepted but the promised resource was not delivered. This is the most consequential failure mode in the pipeline: money was spent and nothing was received.
 
 **Payment required:** Yes (same payment as stage 5)
 
@@ -287,6 +293,32 @@ This spec does not mandate check frequency. Implementers should consider:
 
 - **Lightweight checks (stages 1–4):** Can run every 1–5 minutes at low cost.
 - **Full verification (stages 5–7):** Each check costs real money. Every 1–24 hours is typical, depending on service criticality and cost per call.
+
+---
+
+## Failure Severity Summary
+
+Stages divide into two severity classes based on whether a payment has been attempted:
+
+| Stages | Severity | What it means |
+|--------|----------|---------------|
+| 1–4 | **Soft failure** | No payment made. Service is misbehaving but no funds are at risk. |
+| 5–7 | **Hard failure** | Payment was submitted or completed. Funds may not be recoverable. |
+
+Implementations should surface this distinction in alerts and dashboards. A hard failure at stage 6 (payment accepted, no delivery) warrants immediate notification; a soft failure at stage 2 warrants a degraded status.
+
+---
+
+## Reference Test Vectors
+
+Test vectors allow implementations to self-certify without a live x402 endpoint. A test vector is a mock HTTP exchange — a defined request and response — that a conforming runner must process into a specific evidence record.
+
+Test vectors live in `test-vectors/` in this repository. Each vector is a directory containing:
+- `request.json` — the mock HTTP request
+- `response-stage-N.json` — the mock HTTP response for each stage
+- `expected-evidence-record.json` — the evidence record a conforming runner must produce
+
+**Status:** Test vectors are planned for v0.2. Contributions welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
 
