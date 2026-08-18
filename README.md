@@ -1,5 +1,9 @@
 # x402 Reliability Spec
 
+[![Spec Version](https://img.shields.io/badge/spec-v0.1_working_draft-blue)](./SPEC.md)
+[![License](https://img.shields.io/badge/license-Apache_2.0-green)](./LICENSE)
+[![CI](https://github.com/danbuildss/x402-reliability-spec/actions/workflows/validate-examples.yml/badge.svg)](https://github.com/danbuildss/x402-reliability-spec/actions/workflows/validate-examples.yml)
+
 An open specification for verifying the reliability of x402 payment services.
 
 x402 is the HTTP-native protocol for AI agent micropayments. As agents depend on paid external services, a failed tool call is no longer just an API error — it's money spent, a workflow interrupted, a customer left waiting.

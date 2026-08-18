@@ -22,6 +22,8 @@ An x402 service is **reliable** when it:
 
 A service must pass all 7 stages to be considered fully verified. Partial verification (stages 1–4 only) is valid and useful when a full payment check is not warranted.
 
+**Why 7 stages and not fewer?** Each stage catches a distinct failure mode. A service can pass availability and still have malformed payment terms (stage 3). It can accept payment and still return an empty body (stage 6). Collapsing stages would hide which part of the x402 contract broke — making it harder to debug and impossible to compare failures across services.
+
 ---
 
 ## Definitions
@@ -40,6 +42,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 
 ## The 7 Stages
 
+**Why the lightweight/full split?** Stages 1–4 require no payment and can run every few minutes at near-zero cost. Stages 5–7 spend real money — even at $0.001 per call, running full verification every minute across many services is expensive. The split lets implementations run lightweight checks frequently for uptime detection, and full verification less often for end-to-end confidence. Both produce valid evidence records.
+
 ### Stage 1: Availability
 
 **What it checks:** The endpoint returns any HTTP response within the timeout window.
@@ -51,6 +55,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 **Fail condition:** Connection refused, DNS failure, TLS error, or timeout.
 
 **Payment required:** No
+
+**Rationale:** Stage 1 accepts any HTTP response — including 500 — because the goal here is only to confirm the endpoint is reachable. Whether it responds correctly is tested in stage 2 onward. Conflating reachability with correctness makes failures harder to diagnose.
 
 **Evidence fields:**
 ```json
@@ -135,6 +141,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 
 **Note:** Implementations should document their price validity ceiling. The spec does not mandate a specific ceiling — what is reasonable varies by service type.
 
+**Rationale:** Price validity is deliberately left implementation-defined because x402 services span a wide range — a weather API at $0.001 and a compute service at $0.50 are both legitimate. A hard ceiling in the spec would either block valid high-value services or allow runaway costs in monitoring wallets. The ceiling belongs in the tool, not the standard.
+
 **Payment required:** No
 
 **Evidence fields:**
@@ -218,6 +226,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 **Fail condition:** Validation errors, schema not found, or body cannot be parsed as the declared content type.
 
 **Note:** Stage 7 is optional when no schema is available. Implementations should record `schema_source: null` and `passed: null` (not `false`) when no schema exists — this is not a failure, it is an absence of evidence.
+
+**Rationale:** `null` vs `false` is a meaningful distinction throughout this spec. `false` means "we checked and it failed." `null` means "we could not check." Recording `false` when no schema exists would make a service look non-conformant for something it has no control over. Consumers of evidence records must treat `null` as "unknown" and `false` as "verified failure."
 
 **Payment required:** Yes (same payment as stage 5)
 
