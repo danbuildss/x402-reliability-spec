@@ -96,6 +96,8 @@ A service must pass all 7 stages to be considered fully verified. Partial verifi
 
 **Method:** Parse the body of the 402 response from stage 2.
 
+**x402 protocol reference:** Field definitions follow the [x402 protocol specification](https://github.com/coinbase/x402) (Coinbase). This spec targets x402 as of the date in the header above; if the x402 spec has changed, open an issue.
+
 **Pass condition:** The response body is valid JSON and contains the required x402 payment fields: `accepts`, `error`.
 
 **Required fields:**

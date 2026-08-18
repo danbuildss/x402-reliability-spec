@@ -7,6 +7,18 @@ Versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [0.1.1] — 2026-08-18
+
+### Added
+- GitHub Actions CI: validates all `examples/*.json` against `schema/evidence-record.json` on every PR
+- Issue templates: ambiguity report, edge case discussion
+- `CODE_OF_CONDUCT.md`
+
+### Changed
+- Stage 3: added reference link to the Coinbase x402 protocol specification
+
+---
+
 ## [0.1.0] — 2026-08-18
 
 ### Added

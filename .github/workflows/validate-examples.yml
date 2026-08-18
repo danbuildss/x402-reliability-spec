@@ -1,0 +1,93 @@
+name: Validate Examples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Validate examples against evidence-record schema
+        run: |
+          python3 - <<'EOF'
+          import json
+          import sys
+          import os
+          import jsonschema
+          from jsonschema import validate, RefResolver
+
+          schema_dir = os.path.abspath("schema")
+          store = {}
+
+          for fname in os.listdir(schema_dir):
+              if fname.endswith(".json"):
+                  with open(os.path.join(schema_dir, fname)) as f:
+                      s = json.load(f)
+                  if "$id" in s:
+                      store[s["$id"]] = s
+
+          with open("schema/evidence-record.json") as f:
+              record_schema = json.load(f)
+
+          resolver = RefResolver(
+              base_uri=record_schema.get("$id", ""),
+              referrer=record_schema,
+              store=store,
+          )
+
+          errors = []
+          for fname in sorted(os.listdir("examples")):
+              if not fname.endswith(".json"):
+                  continue
+              path = os.path.join("examples", fname)
+              with open(path) as f:
+                  instance = json.load(f)
+              try:
+                  validate(instance=instance, schema=record_schema, resolver=resolver)
+                  print(f"  OK  {fname}")
+              except jsonschema.ValidationError as e:
+                  errors.append((fname, str(e.message)))
+                  print(f"  FAIL  {fname}: {e.message}")
+
+          if errors:
+              print(f"\n{len(errors)} validation error(s). See above.")
+              sys.exit(1)
+          else:
+              print(f"\nAll examples valid.")
+          EOF
+
+      - name: Check all stages use valid names
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+
+          valid_names = {
+              "availability", "402_response", "payment_terms",
+              "price_validity", "payment_processing", "delivery", "schema_validity"
+          }
+
+          errors = []
+          for fname in os.listdir("examples"):
+              if not fname.endswith(".json"):
+                  continue
+              with open(f"examples/{fname}") as f:
+                  record = json.load(f)
+              for stage in record.get("stages", []):
+                  if stage.get("name") not in valid_names:
+                      errors.append(f"{fname}: unknown stage name '{stage.get('name')}'")
+
+          if errors:
+              for e in errors:
+                  print(f"  ERROR  {e}")
+              sys.exit(1)
+          else:
+              print("All stage names valid.")
+          EOF
