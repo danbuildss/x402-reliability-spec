@@ -1,0 +1,76 @@
+{
+  "_comment": "Example: a service that passes all 7 stages — fully verified",
+  "spec_version": "0.1",
+  "endpoint": "https://api.example.com/weather",
+  "checked_at": "2026-08-18T09:30:00Z",
+  "network": "base",
+  "overall_passed": true,
+  "highest_stage_passed": 7,
+  "checker_id": "cortx-monitor",
+  "check_wallet": "0x1234567890abcdef1234567890abcdef12345678",
+  "stages": [
+    {
+      "stage": 1,
+      "name": "availability",
+      "passed": true,
+      "latency_ms": 189,
+      "error": null
+    },
+    {
+      "stage": 2,
+      "name": "402_response",
+      "passed": true,
+      "status_code": 402,
+      "latency_ms": 201,
+      "error": null
+    },
+    {
+      "stage": 3,
+      "name": "payment_terms",
+      "passed": true,
+      "scheme": "exact",
+      "network": "base",
+      "asset": "USDC",
+      "latency_ms": 0,
+      "error": null
+    },
+    {
+      "stage": 4,
+      "name": "price_validity",
+      "passed": true,
+      "price_usdc": 0.001,
+      "currency": "USDC",
+      "latency_ms": 0,
+      "error": null
+    },
+    {
+      "stage": 5,
+      "name": "payment_processing",
+      "passed": true,
+      "tx_hash": "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3",
+      "network": "base",
+      "response_status": 200,
+      "latency_ms": 2340,
+      "error": null
+    },
+    {
+      "stage": 6,
+      "name": "delivery",
+      "passed": true,
+      "content_type": "application/json",
+      "body_bytes": 312,
+      "latency_ms": 0,
+      "error": null
+    },
+    {
+      "stage": 7,
+      "name": "schema_validity",
+      "passed": true,
+      "schema_source": "service_published",
+      "schema_url": "https://api.example.com/schema/weather.json",
+      "validation_errors": [],
+      "latency_ms": 45,
+      "error": null
+    }
+  ]
+}

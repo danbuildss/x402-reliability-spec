@@ -1,0 +1,62 @@
+{
+  "_comment": "Example: service is reachable (stage 1 passes) but does not return a 402 on unpaid requests (returns 200 instead). Stages 3-7 are skipped.",
+  "spec_version": "0.1",
+  "endpoint": "https://api.example.com/broken-endpoint",
+  "checked_at": "2026-08-18T16:00:00Z",
+  "network": "base",
+  "overall_passed": false,
+  "highest_stage_passed": 1,
+  "checker_id": "cortx-monitor",
+  "stages": [
+    {
+      "stage": 1,
+      "name": "availability",
+      "passed": true,
+      "latency_ms": 98,
+      "error": null
+    },
+    {
+      "stage": 2,
+      "name": "402_response",
+      "passed": false,
+      "status_code": 200,
+      "latency_ms": 112,
+      "error": "Expected 402 Payment Required, got 200 OK — endpoint is serving content without payment"
+    },
+    {
+      "stage": 3,
+      "name": "payment_terms",
+      "passed": null,
+      "latency_ms": null,
+      "error": "Skipped: stage 2 failed"
+    },
+    {
+      "stage": 4,
+      "name": "price_validity",
+      "passed": null,
+      "latency_ms": null,
+      "error": "Skipped: stage 2 failed"
+    },
+    {
+      "stage": 5,
+      "name": "payment_processing",
+      "passed": null,
+      "latency_ms": null,
+      "error": "Skipped: stage 2 failed"
+    },
+    {
+      "stage": 6,
+      "name": "delivery",
+      "passed": null,
+      "latency_ms": null,
+      "error": "Skipped: stage 2 failed"
+    },
+    {
+      "stage": 7,
+      "name": "schema_validity",
+      "passed": null,
+      "latency_ms": null,
+      "error": "Skipped: stage 2 failed"
+    }
+  ]
+}

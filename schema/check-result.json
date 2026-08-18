@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/danbuildss/x402-reliability-spec/schema/check-result.json",
+  "title": "x402 Stage Result",
+  "description": "The result of a single stage in the x402 reliability verification pipeline",
+  "type": "object",
+  "required": ["stage", "name", "passed"],
+  "properties": {
+    "stage": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 7,
+      "description": "Stage number (1-7)"
+    },
+    "name": {
+      "type": "string",
+      "enum": [
+        "availability",
+        "402_response",
+        "payment_terms",
+        "price_validity",
+        "payment_processing",
+        "delivery",
+        "schema_validity"
+      ],
+      "description": "Machine-readable stage name"
+    },
+    "passed": {
+      "type": ["boolean", "null"],
+      "description": "True = passed, false = failed, null = skipped or unattempted"
+    },
+    "latency_ms": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Time in milliseconds for this stage to complete"
+    },
+    "error": {
+      "type": ["string", "null"],
+      "description": "Error message if the stage failed or threw an exception"
+    },
+    "status_code": {
+      "type": ["integer", "null"],
+      "description": "HTTP status code received (stages 1-2, 5)"
+    },
+    "scheme": {
+      "type": ["string", "null"],
+      "description": "x402 payment scheme (stage 3)"
+    },
+    "network": {
+      "type": ["string", "null"],
+      "description": "Blockchain network (stage 3)"
+    },
+    "asset": {
+      "type": ["string", "null"],
+      "description": "Payment asset symbol, e.g. USDC (stage 3)"
+    },
+    "price_usdc": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Price in USDC as a decimal number (stage 4)"
+    },
+    "currency": {
+      "type": ["string", "null"],
+      "description": "Currency symbol for price (stage 4)"
+    },
+    "tx_hash": {
+      "type": ["string", "null"],
+      "description": "On-chain transaction hash for the synthetic payment (stage 5)"
+    },
+    "response_status": {
+      "type": ["integer", "null"],
+      "description": "HTTP status code of the paid response (stage 5)"
+    },
+    "content_type": {
+      "type": ["string", "null"],
+      "description": "Content-Type of the delivered response (stage 6)"
+    },
+    "body_bytes": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Size in bytes of the response body (stage 6)"
+    },
+    "schema_source": {
+      "type": ["string", "null"],
+      "enum": ["service_published", "registry", "community", null],
+      "description": "How the schema was located (stage 7)"
+    },
+    "schema_url": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "description": "URL of the schema used for validation (stage 7)"
+    },
+    "validation_errors": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "string"
+      },
+      "description": "List of validation error messages (stage 7)"
+    }
+  },
+  "additionalProperties": true
+}

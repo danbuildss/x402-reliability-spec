@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/danbuildss/x402-reliability-spec/schema/evidence-record.json",
+  "title": "x402 Evidence Record",
+  "description": "The complete output of an x402 reliability check: endpoint, timestamp, and results for each stage attempted",
+  "type": "object",
+  "required": [
+    "spec_version",
+    "endpoint",
+    "checked_at",
+    "network",
+    "stages",
+    "overall_passed",
+    "highest_stage_passed"
+  ],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "description": "Version of the x402 Reliability Spec used to produce this record",
+      "examples": ["0.1"]
+    },
+    "endpoint": {
+      "type": "string",
+      "format": "uri",
+      "description": "The URL of the x402 endpoint that was checked"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when the check was initiated"
+    },
+    "network": {
+      "type": "string",
+      "description": "Blockchain network on which the payment was (or would be) made",
+      "examples": ["base", "base-sepolia", "ethereum"]
+    },
+    "stages": {
+      "type": "array",
+      "description": "Results for each stage, in order. Skipped stages must be included with passed: null.",
+      "minItems": 1,
+      "maxItems": 7,
+      "items": {
+        "$ref": "./check-result.json"
+      }
+    },
+    "overall_passed": {
+      "type": "boolean",
+      "description": "True only if all attempted stages passed. False if any stage failed. False if only stages 1-4 were run (partial check)."
+    },
+    "highest_stage_passed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "description": "The highest stage number that passed. 0 if no stages passed."
+    },
+    "checker_id": {
+      "type": "string",
+      "description": "Identifier for the tool or service that produced this record"
+    },
+    "check_wallet": {
+      "type": "string",
+      "description": "Public address of the synthetic wallet used for the payment check (stages 5-7)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text notes from the checker"
+    }
+  },
+  "additionalProperties": true,
+  "examples": [
+    {
+      "spec_version": "0.1",
+      "endpoint": "https://api.example.com/data",
+      "checked_at": "2026-08-18T12:00:00Z",
+      "network": "base",
+      "overall_passed": true,
+      "highest_stage_passed": 7,
+      "checker_id": "cortx-monitor",
+      "stages": [
+        { "stage": 1, "name": "availability", "passed": true, "latency_ms": 234, "error": null },
+        { "stage": 2, "name": "402_response", "passed": true, "status_code": 402, "error": null },
+        { "stage": 3, "name": "payment_terms", "passed": true, "scheme": "exact", "network": "base", "asset": "USDC", "error": null },
+        { "stage": 4, "name": "price_validity", "passed": true, "price_usdc": 0.001, "currency": "USDC", "error": null },
+        { "stage": 5, "name": "payment_processing", "passed": true, "tx_hash": "0xabc123", "network": "base", "response_status": 200, "error": null },
+        { "stage": 6, "name": "delivery", "passed": true, "content_type": "application/json", "body_bytes": 842, "error": null },
+        { "stage": 7, "name": "schema_validity", "passed": true, "schema_source": "service_published", "schema_url": "https://api.example.com/schema.json", "validation_errors": [], "error": null }
+      ]
+    }
+  ]
+}
