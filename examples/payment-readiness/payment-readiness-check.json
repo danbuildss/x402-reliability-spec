@@ -1,0 +1,18 @@
+{
+  "_comment": "Example: payment readiness check — confirms a payment would succeed without spending USDC. No on-chain settlement occurs. This record uses the payment_readiness schema, not the stage-based evidence-record schema.",
+  "check_type": "payment_readiness",
+  "spec_version": "0.2",
+  "endpoint": "https://api.bankr.bot/v1/search",
+  "checked_at": "2026-08-28T12:00:00Z",
+  "network": "base",
+  "checker_id": "cortx-monitor",
+  "check_wallet": "0x1234567890abcdef1234567890abcdef12345678",
+  "facilitator_url": "https://api.bankr.bot/facilitator",
+  "facilitator_is_custom": true,
+  "facilitator_responded": true,
+  "is_valid": true,
+  "invalid_reason": null,
+  "authorization_ttl_seconds": 60,
+  "latency_ms": 95,
+  "status": "ready"
+}
