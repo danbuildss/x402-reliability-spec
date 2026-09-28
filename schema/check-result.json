@@ -38,6 +38,19 @@
       "type": ["string", "null"],
       "description": "Error message if the stage failed or threw an exception"
     },
+    "error_code": {
+      "type": ["string", "null"],
+      "description": "Machine-readable code for a failed stage, e.g. ZERO_PRICE or INSUFFICIENT_BALANCE (SPEC.md, Error Codes)"
+    },
+    "fault": {
+      "type": ["string", "null"],
+      "enum": ["service", "checker", null],
+      "description": "Who a failure is attributed to: the service, or the checker (checker-side error). null when the stage passed or was skipped"
+    },
+    "method": {
+      "type": ["string", "null"],
+      "description": "HTTP method that produced the 402 (stage 2)"
+    },
     "status_code": {
       "type": ["integer", "null"],
       "description": "HTTP status code received (stages 1-2, 5)"
@@ -48,7 +61,21 @@
     },
     "network": {
       "type": ["string", "null"],
-      "description": "Blockchain network (stage 3)"
+      "description": "Blockchain network, exactly as the service sent it (stages 3, 5)"
+    },
+    "x402_version": {
+      "type": ["integer", "null"],
+      "enum": [1, 2, null],
+      "description": "x402 protocol version of the payment terms (stage 3)"
+    },
+    "terms_source": {
+      "type": ["string", "null"],
+      "enum": ["body", "payment-required", "x-payment-required", null],
+      "description": "Where the payment terms were read from (stage 3)"
+    },
+    "facilitator_url": {
+      "type": ["string", "null"],
+      "description": "Facilitator URL the service published, or null (stage 3)"
     },
     "asset": {
       "type": ["string", "null"],
@@ -59,13 +86,32 @@
       "minimum": 0,
       "description": "Price in USDC as a decimal number (stage 4)"
     },
+    "price_atomic_units": {
+      "type": ["boolean", "null"],
+      "description": "Whether the advertised price was read as atomic units of the asset (stage 4)"
+    },
     "currency": {
       "type": ["string", "null"],
       "description": "Currency symbol for price (stage 4)"
     },
     "tx_hash": {
       "type": ["string", "null"],
-      "description": "On-chain transaction hash for the synthetic payment (stage 5)"
+      "description": "On-chain transaction hash from the service's settlement receipt; null when there is no receipt. Never invented (stage 5)"
+    },
+    "payment_header": {
+      "type": ["string", "null"],
+      "enum": ["X-PAYMENT", "PAYMENT-SIGNATURE", null],
+      "description": "Header the payment was sent in (stage 5)"
+    },
+    "settlement_status": {
+      "type": ["string", "null"],
+      "enum": ["confirmed", "failed", "unconfirmed", null],
+      "description": "What the service's settlement receipt says (stage 5)"
+    },
+    "receipt_header": {
+      "type": ["string", "null"],
+      "enum": ["PAYMENT-RESPONSE", "X-PAYMENT-RESPONSE", null],
+      "description": "Header the settlement receipt came from (stage 5)"
     },
     "response_status": {
       "type": ["integer", "null"],

@@ -15,7 +15,7 @@ jobs:
       - name: Install jsonschema
         run: pip install jsonschema
 
-      - name: Validate examples against evidence-record schema
+      - name: Validate examples and test-vector expectations against evidence-record schema
         run: |
           python3 - <<'EOF'
           import json
@@ -43,11 +43,13 @@ jobs:
               store=store,
           )
 
+          paths = [os.path.join("examples", f) for f in sorted(os.listdir("examples")) if f.endswith(".json")]
+          paths += [os.path.join("test-vectors", d, "expected.json") for d in sorted(os.listdir("test-vectors"))
+                    if os.path.isdir(os.path.join("test-vectors", d))]
+
           errors = []
-          for fname in sorted(os.listdir("examples")):
-              if not fname.endswith(".json"):
-                  continue
-              path = os.path.join("examples", fname)
+          for path in paths:
+              fname = path
               with open(path) as f:
                   instance = json.load(f)
               try:
@@ -74,11 +76,12 @@ jobs:
               "price_validity", "payment_processing", "delivery", "schema_validity"
           }
 
+          paths = [f"examples/{f}" for f in os.listdir("examples") if f.endswith(".json")]
+          paths += [f"test-vectors/{d}/expected.json" for d in os.listdir("test-vectors") if os.path.isdir(f"test-vectors/{d}")]
+
           errors = []
-          for fname in os.listdir("examples"):
-              if not fname.endswith(".json"):
-                  continue
-              with open(f"examples/{fname}") as f:
+          for fname in paths:
+              with open(fname) as f:
                   record = json.load(f)
               for stage in record.get("stages", []):
                   if stage.get("name") not in valid_names:
@@ -90,4 +93,43 @@ jobs:
               sys.exit(1)
           else:
               print("All stage names valid.")
+          EOF
+
+      - name: Check test vectors are well-formed
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+
+          errors = []
+          for d in sorted(os.listdir("test-vectors")):
+              base = os.path.join("test-vectors", d)
+              if not os.path.isdir(base):
+                  continue
+              for need in ("vector.json", "expected.json"):
+                  if not os.path.exists(os.path.join(base, need)):
+                      errors.append(f"{d}: missing {need}")
+              if errors:
+                  continue
+              v = json.load(open(os.path.join(base, "vector.json")))
+              e = json.load(open(os.path.join(base, "expected.json")))
+              for key in ("description", "checker", "unpaid", "paid"):
+                  if key not in v:
+                      errors.append(f"{d}: vector.json missing '{key}'")
+              if e.get("spec_version") != "0.3":
+                  errors.append(f"{d}: expected.json spec_version must be 0.3")
+              if "outcome" not in e:
+                  errors.append(f"{d}: expected.json must set outcome")
+              if [s["stage"] for s in e.get("stages", [])] != list(range(1, 8)):
+                  errors.append(f"{d}: expected.json must list stages 1-7 in order")
+              for s in e.get("stages", []):
+                  if s.get("passed") is False and s.get("fault") not in ("service", "checker"):
+                      errors.append(f"{d}: failed stage {s['stage']} needs fault 'service' or 'checker'")
+              if (e.get("outcome") == "checker_error") != any(s.get("fault") == "checker" for s in e.get("stages", [])):
+                  errors.append(f"{d}: outcome checker_error <=> a stage with fault 'checker'")
+
+          if errors:
+              for e in errors:
+                  print(f"  ERROR  {e}")
+              sys.exit(1)
+          print("All test vectors well-formed.")
           EOF
