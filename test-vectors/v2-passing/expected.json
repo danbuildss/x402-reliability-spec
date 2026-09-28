@@ -1,0 +1,51 @@
+{
+  "spec_version": "0.3",
+  "endpoint": "https://vector.invalid/v2-passing",
+  "checked_at": "2026-09-28T00:00:00Z",
+  "network": "eip155:8453",
+  "check_type": "full",
+  "outcome": "passed",
+  "overall_passed": true,
+  "highest_stage_passed": 7,
+  "x402_version": 2,
+  "input_source": "none",
+  "stages": [
+    {
+      "stage": 1,
+      "name": "availability",
+      "passed": true
+    },
+    {
+      "stage": 2,
+      "name": "402_response",
+      "passed": true
+    },
+    {
+      "stage": 3,
+      "name": "payment_terms",
+      "passed": true
+    },
+    {
+      "stage": 4,
+      "name": "price_validity",
+      "passed": true
+    },
+    {
+      "stage": 5,
+      "name": "payment_processing",
+      "passed": true,
+      "settlement_status": "confirmed",
+      "tx_hash": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+    },
+    {
+      "stage": 6,
+      "name": "delivery",
+      "passed": true
+    },
+    {
+      "stage": 7,
+      "name": "schema_validity",
+      "passed": true
+    }
+  ]
+}

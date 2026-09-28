@@ -1,0 +1,59 @@
+{
+  "description": "x402 V1 service: terms in the 402 body, payment in X-PAYMENT, receipt in X-PAYMENT-RESPONSE. Everything passes.",
+  "checker": {
+    "max_price_usdc": 0.1,
+    "schema": {
+      "type": "object",
+      "required": [
+        "price"
+      ],
+      "properties": {
+        "price": {
+          "type": "number"
+        }
+      }
+    },
+    "wallet_balance_usdc": 1000
+  },
+  "unpaid": {
+    "status": 402,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "x402Version": 1,
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base",
+          "maxAmountRequired": "1000",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "payTo": "0x209693Bc6afc0C5328bA36FaF03C514EF312287C",
+          "resource": "{{ENDPOINT}}",
+          "description": "Test price quote",
+          "mimeType": "application/json",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    }
+  },
+  "paid": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-payment-response": {
+        "success": true,
+        "transaction": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "network": "base",
+        "payer": "{{CHECKER_WALLET}}"
+      }
+    },
+    "body": {
+      "price": 123.45
+    }
+  }
+}

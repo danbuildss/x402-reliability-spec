@@ -17,7 +17,7 @@
     "spec_version": {
       "type": "string",
       "description": "Version of the x402 Reliability Spec used to produce this record",
-      "examples": ["0.1"]
+      "examples": ["0.3"]
     },
     "endpoint": {
       "type": "string",
@@ -45,7 +45,7 @@
     },
     "overall_passed": {
       "type": "boolean",
-      "description": "True only if all attempted stages passed. False if any stage failed. False if only stages 1-4 were run (partial check)."
+      "description": "True only if all attempted stages passed. False if any stage failed, if only stages 1-4 were run (partial check), or on a checker-side error. Read `outcome` to tell these apart."
     },
     "highest_stage_passed": {
       "type": "integer",
@@ -64,6 +64,26 @@
     "notes": {
       "type": "string",
       "description": "Free-text notes from the checker"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["passed", "failed", "partial", "checker_error"],
+      "description": "passed; failed (the service failed a stage); partial (stages 1-4 only, all passed); checker_error (the checker could not complete the check, never counted against the service). Required for v0.3 checkers."
+    },
+    "check_type": {
+      "type": "string",
+      "enum": ["lightweight", "full"],
+      "description": "lightweight = stages 1-4, full = stages 1-7"
+    },
+    "x402_version": {
+      "type": ["integer", "null"],
+      "enum": [1, 2, null],
+      "description": "x402 protocol version of the service's payment terms"
+    },
+    "input_source": {
+      "type": "string",
+      "enum": ["owner_provided", "service_example", "none"],
+      "description": "Where the test input came from (SPEC.md, Test Input)"
     }
   },
   "additionalProperties": true,

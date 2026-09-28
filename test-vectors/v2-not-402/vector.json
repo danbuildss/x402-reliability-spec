@@ -1,0 +1,18 @@
+{
+  "description": "Service answers 200 without payment. Stage 1 passes (it answered), stage 2 fails. The checker must not pay.",
+  "checker": {
+    "max_price_usdc": 0.1,
+    "schema": null,
+    "wallet_balance_usdc": 1000
+  },
+  "unpaid": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "free": true
+    }
+  },
+  "paid": null
+}

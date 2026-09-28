@@ -1,0 +1,47 @@
+{
+  "description": "V1 service declares and returns application/json, but the paid body is not JSON. Stage 7 fails with INVALID_JSON even though no schema is configured.",
+  "checker": {
+    "max_price_usdc": 0.1,
+    "schema": null,
+    "wallet_balance_usdc": 1000
+  },
+  "unpaid": {
+    "status": 402,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "x402Version": 1,
+      "accepts": [
+        {
+          "scheme": "exact",
+          "network": "base",
+          "maxAmountRequired": "1000",
+          "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          "payTo": "0x209693Bc6afc0C5328bA36FaF03C514EF312287C",
+          "resource": "{{ENDPOINT}}",
+          "description": "Test price quote",
+          "mimeType": "application/json",
+          "maxTimeoutSeconds": 60,
+          "extra": {
+            "name": "USD Coin",
+            "version": "2"
+          }
+        }
+      ]
+    }
+  },
+  "paid": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json",
+      "x-payment-response": {
+        "success": true,
+        "transaction": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "network": "base",
+        "payer": "{{CHECKER_WALLET}}"
+      }
+    },
+    "body": "not json"
+  }
+}

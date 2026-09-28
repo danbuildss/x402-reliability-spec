@@ -1,0 +1,38 @@
+{
+  "description": "V2 terms quote a price of 0. Stage 4 fails with ZERO_PRICE; no payment.",
+  "checker": {
+    "max_price_usdc": 0.1,
+    "schema": null,
+    "wallet_balance_usdc": 1000
+  },
+  "unpaid": {
+    "status": 402,
+    "headers": {
+      "content-type": "application/json",
+      "payment-required": {
+        "x402Version": 2,
+        "resource": {
+          "url": "{{ENDPOINT}}",
+          "description": "Test price quote",
+          "mimeType": "application/json"
+        },
+        "accepts": [
+          {
+            "scheme": "exact",
+            "network": "eip155:8453",
+            "amount": "0",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+            "payTo": "0x209693Bc6afc0C5328bA36FaF03C514EF312287C",
+            "maxTimeoutSeconds": 60,
+            "extra": {
+              "name": "USD Coin",
+              "version": "2"
+            }
+          }
+        ]
+      }
+    },
+    "body": ""
+  },
+  "paid": null
+}

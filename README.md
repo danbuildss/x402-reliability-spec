@@ -1,6 +1,6 @@
 # x402 Reliability Spec
 
-[![Spec Version](https://img.shields.io/badge/spec-v0.1_working_draft-blue)](./SPEC.md)
+[![Spec Version](https://img.shields.io/badge/spec-v0.3_working_draft-blue)](./SPEC.md)
 [![License](https://img.shields.io/badge/license-Apache_2.0-green)](./LICENSE)
 [![CI](https://github.com/danbuildss/x402-reliability-spec/actions/workflows/validate-examples.yml/badge.svg)](https://github.com/danbuildss/x402-reliability-spec/actions/workflows/validate-examples.yml)
 
@@ -30,6 +30,8 @@ The stages progress from lightweight (no payment required) to full end-to-end ve
 
 Stages 1–4 are lightweight checks that can run frequently. Stages 5–7 require a real payment and should run less often.
 
+The spec covers both x402 wire formats (V1 and V2), separates the service's failures from the checker's own (an empty checker wallet is never the service's fault), and ships test vectors any implementation can run to prove it conforms.
+
 ---
 
 ## Repository structure
@@ -45,6 +47,8 @@ x402-reliability-spec/
     passing-all-stages.json
     failing-stage-5.json
     failing-stage-2.json
+    payment-readiness/     ← example payment readiness record
+  test-vectors/            ← mock services + expected records (see test-vectors/README.md)
   CONTRIBUTING.md    ← how to propose changes
   CHANGELOG.md       ← version history
 ```
@@ -64,13 +68,13 @@ x402-reliability-spec/
 
 [CORTX](https://usecortx.dev) is the reference implementation of this spec. CORTX runs synthetic checks against live x402 services and accumulates reliability history over time.
 
-Conforming with this spec does not require CORTX. Any tool that produces evidence records matching the schemas in `schema/` is a valid implementation.
+Conforming with this spec does not require CORTX. Any tool that produces evidence records matching the schemas in `schema/` and the results in `test-vectors/` is a valid implementation.
 
 ---
 
 ## Status
 
-**v0.1 — working draft.** The spec is stable enough to implement against. Breaking changes will be versioned.
+**v0.3 — working draft.** The spec is stable enough to implement against. Breaking changes will be versioned. See [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 
