@@ -66,7 +66,7 @@ x402-reliability-spec/
 
 ## Reference implementation
 
-[CORTX](https://usecortx.dev) is the reference implementation of this spec. CORTX runs synthetic checks against live x402 services and accumulates reliability history over time.
+[CORTX](https://usecortx.dev) ([source](https://github.com/danbuildss/cortx), MIT) is the reference implementation of this spec. CORTX runs synthetic checks against live x402 services and accumulates reliability history over time. Its test suite runs every vector in `test-vectors/` through its real check runner ([`spec-conformance.test.ts`](https://github.com/danbuildss/cortx/blob/main/lib/check-runner/spec-conformance.test.ts)), and its public [reliability API](https://usecortx.dev/docs/partner-integration) returns the latest paid check as a v0.3 evidence record.
 
 Conforming with this spec does not require CORTX. Any tool that produces evidence records matching the schemas in `schema/` and the results in `test-vectors/` is a valid implementation.
 
